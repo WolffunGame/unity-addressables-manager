@@ -198,6 +198,9 @@ namespace UnityEngine.AddressableAssets
             bool activateOnLoad = true,
             int priority = 100)
         {
+#if ADDRESSABLE_MANAGER_ALL_LOG
+            Debug.Log("Start LoadSceneAsync UniTask: " + key + "__" + loadMode);
+#endif
             if (!GuardKey(key, out key))
             {
                 if (ExceptionHandle == ExceptionHandleType.Throw)
@@ -219,14 +222,24 @@ namespace UnityEngine.AddressableAssets
 
             try
             {
+#if ADDRESSABLE_MANAGER_ALL_LOG
+                Debug.Log("Loading LoadSceneAsync UniTask: " + key);
+#endif
                 var operation = Addressables.LoadSceneAsync(key, loadMode, activateOnLoad, priority);
                 await operation;
+
+                if (loadMode == LoadSceneMode.Single)
+                {
+                    _scenes.Clear();
+                }
 
                 OnLoadSceneCompleted(operation, key);
                 return operation;
             }
             catch (Exception ex)
             {
+                Debug.LogError("LoadSceneAsync UniTask is error: " + key + "__" + ex.GetBaseException() + "\n" + ex.StackTrace);
+
                 if (ExceptionHandle == ExceptionHandleType.Throw)
                     throw ex;
 
@@ -302,6 +315,9 @@ namespace UnityEngine.AddressableAssets
         public static async UniTask<OperationResult<SceneInstance>> UnloadSceneAsync(string key,
             bool autoReleaseHandle = true)
         {
+#if ADDRESSABLE_MANAGER_ALL_LOG
+            Debug.Log("Start UnloadSceneAsync UniTask: " + key + "__" + autoReleaseHandle);
+#endif
             if (!GuardKey(key, out key))
             {
                 if (ExceptionHandle == ExceptionHandleType.Throw)
@@ -315,6 +331,9 @@ namespace UnityEngine.AddressableAssets
 
             if (!_scenes.TryGetValue(key, out var scene))
             {
+#if ADDRESSABLE_MANAGER_ALL_LOG
+                Debug.LogError("UnloadSceneAsync UniTask can't find: " + key + "__" + _scenes.Count);
+#endif
                 if (!SuppressWarningLogs)
                     Debug.LogWarning(Exceptions.NoSceneKeyLoaded(key));
 
@@ -325,13 +344,24 @@ namespace UnityEngine.AddressableAssets
 
             try
             {
+#if ADDRESSABLE_MANAGER_ALL_LOG
+                Debug.Log("Unloading UnloadSceneAsync UniTask: " + key);
+#endif
+
                 var operation = Addressables.UnloadSceneAsync(scene, autoReleaseHandle);
                 await operation;
+
+#if ADDRESSABLE_MANAGER_ALL_LOG
+                Debug.Log("ReleaseScene UnloadSceneAsync UniTask: " + key);
+#endif
+                Addressables.Release(scene);
 
                 return operation;
             }
             catch (Exception ex)
             {
+                Debug.LogError("UnloadSceneAsync UniTask is error: " + key + "__" + ex.GetBaseException() + "\n" + ex.StackTrace);
+
                 if (ExceptionHandle == ExceptionHandleType.Throw)
                     throw ex;
 
