@@ -147,11 +147,17 @@ namespace UnityEngine.AddressableAssets
         {
             if (handle.Status == AsyncOperationStatus.Succeeded)
             {
+#if ADDRESSABLE_MANAGER_ALL_LOG
+                Debug.Log("LoadSceneAsync success: " + key);
+#endif
                 _scenes.Add(key, handle.Result);
                 onSucceeded?.Invoke(handle.Result);
             }
             else if (handle.Status == AsyncOperationStatus.Failed)
             {
+#if ADDRESSABLE_MANAGER_ALL_LOG
+                Debug.LogError("LoadSceneAsync failed: " + key);
+#endif
                 onFailed?.Invoke(key);
             }
         }

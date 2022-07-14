@@ -32,6 +32,9 @@ namespace UnityEngine.AddressableAssets
 
         static AddressablesManager()
         {
+#if ADDRESSABLE_MANAGER_ALL_LOG
+            Debug.Log("AddressablesManager: init");
+#endif
             ExceptionHandle = ExceptionHandleType.Log;
 
             _locations = new Dictionary<string, List<IResourceLocation>>();
@@ -46,6 +49,9 @@ namespace UnityEngine.AddressableAssets
 
         private static void Clear()
         {
+#if ADDRESSABLE_MANAGER_ALL_LOG
+            Debug.Log("AddressablesManager: Clear");
+#endif
             _keys.Clear();
             _locations.Clear();
             _assets.Clear();

@@ -135,6 +135,9 @@ namespace UnityEngine.AddressableAssets
                                      bool activateOnLoad = true,
                                      int priority = 100)
         {
+#if ADDRESSABLE_MANAGER_ALL_LOG
+            Debug.Log("Start LoadScene: " + key + "__" + loadMode);
+#endif
             if (!GuardKey(key, out key))
             {
                 if (ExceptionHandle == ExceptionHandleType.Throw)
@@ -159,6 +162,9 @@ namespace UnityEngine.AddressableAssets
 
             try
             {
+#if ADDRESSABLE_MANAGER_ALL_LOG
+                Debug.Log("Loading LoadScene: " + key);
+#endif
                 var operation = Addressables.LoadSceneAsync(key, loadMode, activateOnLoad, priority);
                 operation.Completed += handle => OnLoadSceneCompleted(handle, key);
             }
@@ -217,6 +223,9 @@ namespace UnityEngine.AddressableAssets
 
         public static void UnloadScene(string key, bool autoReleaseHandle = true)
         {
+#if ADDRESSABLE_MANAGER_ALL_LOG
+            Debug.Log("Start UnloadScene: " + key + "__" + autoReleaseHandle);
+#endif
             if (!GuardKey(key, out key))
             {
                 if (ExceptionHandle == ExceptionHandleType.Throw)
@@ -230,6 +239,9 @@ namespace UnityEngine.AddressableAssets
 
             if (!_scenes.TryGetValue(key, out var scene))
             {
+#if ADDRESSABLE_MANAGER_ALL_LOG
+                Debug.LogError("UnloadScene can't find: " + key + "__" + _scenes.Count);
+#endif
                 if (!SuppressWarningLogs)
                     Debug.LogWarning(Exceptions.NoSceneKeyLoaded(key));
 
@@ -240,6 +252,9 @@ namespace UnityEngine.AddressableAssets
 
             try
             {
+#if ADDRESSABLE_MANAGER_ALL_LOG
+                Debug.Log("Unloading UnloadScene: " + key);
+#endif
                 Addressables.UnloadSceneAsync(scene, autoReleaseHandle);
             }
             catch (Exception ex)

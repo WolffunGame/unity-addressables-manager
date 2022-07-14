@@ -171,6 +171,11 @@ namespace UnityEngine.AddressableAssets
                                                                                 bool activateOnLoad = true,
                                                                                 int priority = 100)
         {
+#if ADDRESSABLE_MANAGER_ALL_LOG
+            Debug.Log("Start LoadSceneAsync: " + key + "__" + loadMode);
+#endif
+
+
             if (!GuardKey(key, out key))
             {
                 if (ExceptionHandle == ExceptionHandleType.Throw)
@@ -192,6 +197,9 @@ namespace UnityEngine.AddressableAssets
 
             try
             {
+#if ADDRESSABLE_MANAGER_ALL_LOG
+                Debug.Log("Loading LoadSceneAsync: " + key);
+#endif
                 var operation = Addressables.LoadSceneAsync(key, loadMode, activateOnLoad, priority);
                 await operation.Task;
 
@@ -200,6 +208,8 @@ namespace UnityEngine.AddressableAssets
             }
             catch (Exception ex)
             {
+                Debug.LogError("LoadSceneAsync is error: " + key + "__" + ex.GetBaseException() + "\n" + ex.StackTrace);
+
                 if (ExceptionHandle == ExceptionHandleType.Throw)
                     throw ex;
 
@@ -215,6 +225,8 @@ namespace UnityEngine.AddressableAssets
                                                                                 bool activateOnLoad = true,
                                                                                 int priority = 100)
         {
+
+
             if (!GuardKey(reference, out var key))
             {
                 if (ExceptionHandle == ExceptionHandleType.Throw)
@@ -244,6 +256,8 @@ namespace UnityEngine.AddressableAssets
             }
             catch (Exception ex)
             {
+                Debug.LogError("LoadSceneAsync is error: " + key + "__" + ex.GetBaseException() + "\n" + ex.StackTrace);
+
                 if (ExceptionHandle == ExceptionHandleType.Throw)
                     throw ex;
 
@@ -256,6 +270,9 @@ namespace UnityEngine.AddressableAssets
 
         public static async Task<OperationResult<SceneInstance>> UnloadSceneAsync(string key, bool autoReleaseHandle = true)
         {
+#if ADDRESSABLE_MANAGER_ALL_LOG
+            Debug.Log("Start UnloadSceneAsync: " + key + "__" + autoReleaseHandle);
+#endif
             if (!GuardKey(key, out key))
             {
                 if (ExceptionHandle == ExceptionHandleType.Throw)
@@ -269,6 +286,10 @@ namespace UnityEngine.AddressableAssets
 
             if (!_scenes.TryGetValue(key, out var scene))
             {
+#if ADDRESSABLE_MANAGER_ALL_LOG
+                Debug.LogError("UnloadSceneAsync can't find: " + key + "__" + _scenes.Count);
+#endif
+
                 if (!SuppressWarningLogs)
                     Debug.LogWarning(Exceptions.NoSceneKeyLoaded(key));
 
@@ -279,6 +300,9 @@ namespace UnityEngine.AddressableAssets
 
             try
             {
+#if ADDRESSABLE_MANAGER_ALL_LOG
+                Debug.Log("Unloading UnloadSceneAsync: " + key);
+#endif
                 var operation = Addressables.UnloadSceneAsync(scene, autoReleaseHandle);
                 await operation.Task;
 
@@ -286,6 +310,8 @@ namespace UnityEngine.AddressableAssets
             }
             catch (Exception ex)
             {
+                Debug.LogError("UnloadSceneAsync is error: " + key + "__" + ex.GetBaseException() + "\n" + ex.StackTrace);
+
                 if (ExceptionHandle == ExceptionHandleType.Throw)
                     throw ex;
 

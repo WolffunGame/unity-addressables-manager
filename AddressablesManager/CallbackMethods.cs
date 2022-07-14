@@ -221,6 +221,9 @@ namespace UnityEngine.AddressableAssets
                                        Action<string> onFailed = null,
                                        bool autoReleaseHandle = true)
         {
+#if ADDRESSABLE_MANAGER_ALL_LOG
+            Debug.Log("Start UnloadScene with callback: " + key + "__" + autoReleaseHandle);
+#endif
             if (!GuardKey(key, out key))
             {
                 onFailed?.Invoke(key);
@@ -229,6 +232,9 @@ namespace UnityEngine.AddressableAssets
 
             if (!_scenes.TryGetValue(key, out var scene))
             {
+#if ADDRESSABLE_MANAGER_ALL_LOG
+                Debug.LogError("UnloadScene with callback can't find: " + key + "__" + _scenes.Count);
+#endif
                 onFailed?.Invoke(key);
                 return;
             }
@@ -237,11 +243,16 @@ namespace UnityEngine.AddressableAssets
 
             try
             {
+#if ADDRESSABLE_MANAGER_ALL_LOG
+                Debug.Log("Unloading UnloadScene with callback: " + key);
+#endif
                 var operation = Addressables.UnloadSceneAsync(scene, autoReleaseHandle);
                 operation.Completed += handle => OnUnloadSceneCompleted(handle, key, onSucceeded, onFailed);
             }
             catch (Exception ex)
             {
+                Debug.LogError("UnloadScene with callback is error: " + key + "__" + ex.GetBaseException() + "\n" + ex.StackTrace);
+
                 if (ExceptionHandle == ExceptionHandleType.Throw)
                     throw ex;
 
@@ -254,6 +265,9 @@ namespace UnityEngine.AddressableAssets
                                        Action<string> onSucceeded = null,
                                        Action<string> onFailed = null)
         {
+#if ADDRESSABLE_MANAGER_ALL_LOG
+            Debug.Log("Start UnloadScene with callback: " + reference);
+#endif
             if (!GuardKey(reference, out var key))
             {
                 onFailed?.Invoke(key);
@@ -262,6 +276,9 @@ namespace UnityEngine.AddressableAssets
 
             if (!_scenes.ContainsKey(key))
             {
+#if ADDRESSABLE_MANAGER_ALL_LOG
+                Debug.LogError("UnloadScene with callback can't find: " + key + "__" + _scenes.Count);
+#endif
                 onFailed?.Invoke(key);
                 return;
             }
@@ -270,11 +287,16 @@ namespace UnityEngine.AddressableAssets
 
             try
             {
+#if ADDRESSABLE_MANAGER_ALL_LOG
+                Debug.Log("Unloading UnloadScene with callback: " + key);
+#endif
                 var operation = reference.UnLoadScene();
                 operation.Completed += handle => OnUnloadSceneCompleted(handle, key, onSucceeded, onFailed);
             }
             catch (Exception ex)
             {
+                Debug.LogError("UnloadScene with callback is error: " + key + "__" + ex.GetBaseException() + "\n" + ex.StackTrace);
+
                 if (ExceptionHandle == ExceptionHandleType.Throw)
                     throw ex;
 
