@@ -354,8 +354,6 @@ namespace UnityEngine.AddressableAssets
 #if ADDRESSABLE_MANAGER_ALL_LOG
                 Debug.Log("ReleaseScene UnloadSceneAsync UniTask: " + key);
 #endif
-                Addressables.Release(scene);
-
                 return operation;
             }
             catch (Exception ex)
