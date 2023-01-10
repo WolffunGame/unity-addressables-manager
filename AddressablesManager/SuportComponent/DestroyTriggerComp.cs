@@ -6,6 +6,10 @@ namespace UnityEngine.AddressableAssets
     {
         internal Action OnGameObjectDestroy;
 
-        private void OnDestroy() => OnGameObjectDestroy?.Invoke();
+        private void OnDestroy() 
+        {
+            OnGameObjectDestroy?.Invoke();
+            OnGameObjectDestroy = null;
+        } 
     }
 }

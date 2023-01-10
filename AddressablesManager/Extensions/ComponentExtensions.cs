@@ -1,8 +1,13 @@
 ﻿namespace UnityEngine.AddressableAssets
 {
-    public static class ComponentExtensions
+    internal static class ComponentExtensions
     {
-        // Util.
+        public static void OnDestroyTrigger(this GameObject gameObject, Action callBack)
+        {
+            var comp = GetOrAddComponent<DestroyTriggerComp>();
+            comp.OnDestroyTrigger += callBack;
+        }
+
         public static T GetOrAddComponent<T>(this GameObject gameObject) where T : Component
         {
 #if UNITY_2019_2_OR_NEWER

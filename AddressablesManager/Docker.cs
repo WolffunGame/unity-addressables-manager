@@ -50,12 +50,11 @@ namespace UnityEngine.AddressableAssets
             }
             
             _dockedAssetToGameObject.Add(key);
-            var trigger = gameObject.GetOrAddComponent<DestroyTriggerComp>();
-            trigger.OnGameObjectDestroy += () =>
+            gameObject.OnDestroyTrigger(() =>
             {
                 _dockedAssetToGameObject.Remove(key);
                 ReleaseAsset(key);
-            };
+            });
         }
 
         public static UniTask<OperationResult<T>> DockTo<T>(this UniTask<OperationResult<T>> operation,
