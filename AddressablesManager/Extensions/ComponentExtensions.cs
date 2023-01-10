@@ -5,7 +5,7 @@
         public static void OnDestroyTrigger(this GameObject gameObject, System.Action callBack)
         {
             var comp = GetOrAddComponent<DestroyTriggerComp>();
-            comp.OnDestroyTrigger += callBack;
+            comp.OnGameObjectDestroy += callBack;
         }
 
         public static T GetOrAddComponent<T>(this GameObject gameObject) where T : Component
