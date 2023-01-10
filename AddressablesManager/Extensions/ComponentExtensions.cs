@@ -2,7 +2,7 @@
 {
     internal static class ComponentExtensions
     {
-        public static void OnDestroyTrigger(this GameObject gameObject, Action callBack)
+        public static void OnDestroyTrigger(this GameObject gameObject, System.Action callBack)
         {
             var comp = GetOrAddComponent<DestroyTriggerComp>();
             comp.OnDestroyTrigger += callBack;
