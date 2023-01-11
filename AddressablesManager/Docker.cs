@@ -35,12 +35,36 @@ namespace UnityEngine.AddressableAssets
         /// <param name="sceneToDock">can't be default. address will leak and can't be auto unload</param>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
-        public static UniTask<OperationResult<T>> LoadAssetAsync<T>( AssetReferenceT<T> reference, Scene sceneToDock) where T : Object
+        public static UniTask<OperationResult<T>> LoadAssetAsync<T>(AssetReferenceT<T> reference, Scene sceneToDock) where T : Object
         {
             if (sceneToDock != default(Scene) && GuardKey(reference, out var key))
                 DockToScene(key, sceneToDock);
             return LoadAssetAsync<T>(reference);
         }
+        
+        public static UniTask<OperationResult<GameObject>> InstantiateAsync(
+            string assetKey,
+            Scene sceneToDock,
+            Transform parent = null,
+            bool inWorldSpace = false,
+            bool trackHandle = true) 
+        {
+            if (sceneToDock != default(Scene) && GuardKey(assetKey, out var key))
+                DockToScene(key, sceneToDock);
+            return InstantiateAsync(assetKey, parent, inWorldSpace, trackHandle);
+        }
+        
+        public static UniTask<OperationResult<GameObject>> InstantiateAsync(
+            AssetReference reference, 
+            Scene sceneToDock,
+            Transform parent = null,
+            bool inWorldSpace = false)
+        {
+            if (sceneToDock != default(Scene) && GuardKey(reference, out var key))
+                DockToScene(key, sceneToDock);
+            return InstantiateAsync(reference, parent, inWorldSpace);
+        }
+
         
         private static void DockToScene( string key, Scene scene)
         {
