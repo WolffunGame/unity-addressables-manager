@@ -11,65 +11,103 @@ namespace UnityEngine.AddressableAssets
         private static readonly HashSet<string> _dockedAssetToGameObject = new();
         private static bool _isInitialized;
 
-        public static UniTask<OperationResult<T>> DockTo<T>(this UniTask<OperationResult<T>> operation, string assetKey,
-            Scene sceneDocker) where T : Object
+        #region  SceneDocker
+        /// <summary>
+        /// Load Asset Async and dock address to scene
+        /// Asset will be unloaded when scene is unloaded
+        /// </summary>
+        /// <param name="assetKey"></param>
+        /// <param name="sceneToDock"> can't be default. address will leak and can't be auto unload</param>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        public static UniTask<OperationResult<T>> LoadAssetAsync<T>(string assetKey, Scene sceneToDock) where T : Object
         {
-            if (GuardKey(assetKey, out var key))
+            if (sceneToDock != default(Scene) && GuardKey(assetKey, out var key))
+                DockToScene(key, sceneToDock);
+            return LoadAssetAsync<T>(assetKey);
+        }
+        
+        /// <summary>
+        /// Load Asset Async and dock address to scene
+        /// Asset will be unloaded when scene is unloaded
+        /// </summary>
+        /// <param name="reference"></param>
+        /// <param name="sceneToDock">can't be default. address will leak and can't be auto unload</param>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        public static UniTask<OperationResult<T>> LoadAssetAsync<T>( AssetReferenceT<T> reference, Scene sceneToDock) where T : Object
+        {
+            if (sceneToDock != default(Scene) && GuardKey(reference, out var key))
+                DockToScene(key, sceneToDock);
+            return LoadAssetAsync<T>(reference);
+        }
+        
+        private static void DockToScene( string key, Scene scene)
+        {
+            SubscribeSceneEvents();
+            if (!_sceneToAddress.TryGetValue(scene, out var addressList))
             {
-                SubscribeSceneEvents();
-                if (!_sceneToAddress.TryGetValue(sceneDocker, out var addressList))
-                {
-                    addressList = CollectionPool<HashSet<string>, string>.Get();
-                    addressList.Add(key);
-                    _sceneToAddress.Add(sceneDocker, addressList);
-                }
-                if (!addressList.Contains(key))
-                    addressList.Add(key);
+                addressList = CollectionPool<HashSet<string>, string>.Get();
+                addressList.Add(key);
+                _sceneToAddress.Add(scene, addressList);
             }
-            
-            return operation;
+            if (!addressList.Contains(key))
+                addressList.Add(key);
         }
 
-        public static UniTask<OperationResult<T>> DockTo<T>(this UniTask<OperationResult<T>> operation,
-            AssetReferenceT<T> reference, Scene sceneDocker) where T : Object
+        #endregion
+
+        #region GameObjectDocker
+        /// <summary>
+        /// Load Asset Async and dock address to scene
+        /// Asset will be unloaded when GameObject is destroyed
+        /// </summary>
+        /// <param name="assetKey"></param>
+        /// <param name="gameObjectToDock">can't be null. address will leak and can't be auto unload</param>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        public static UniTask<OperationResult<T>> LoadAssetAsync<T>(string assetKey, GameObject gameObjectToDock) where T : Object
         {
-            if (GuardKey(reference, out var key))
-                return DockTo(operation, key, sceneDocker);
-            return operation;
+            if (gameObjectToDock != null && GuardKey(assetKey, out var key))
+                DockToGameObject(key, gameObjectToDock);
+            return LoadAssetAsync<T>(assetKey);
+        }
+        
+        /// <summary>
+        /// Load Asset Async and dock address to scene
+        /// Asset will be unloaded when GameObject is destroyed
+        /// </summary>
+        /// <param name="reference"></param>
+        /// <param name="gameObjectToDock">can't be null. address will leak and can't be auto unload</param>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        public static UniTask<OperationResult<T>> LoadAssetAsync<T>( AssetReferenceT<T> reference, GameObject gameObjectToDock) where T : Object
+        {
+            if (gameObjectToDock != null && GuardKey(reference, out var key))
+                DockToGameObject(key, gameObjectToDock);
+            return LoadAssetAsync<T>(reference);
         }
 
-        public static UniTask<OperationResult<T>> DockTo<T>(this UniTask<OperationResult<T>> operation, string assetKey,
-            GameObject gameObject) where T : Object
+        private static void DockToGameObject(string key, GameObject gameObjectDocker)
         {
-            if (GuardKey(assetKey, out var key))
+            if (!_dockedAssetToGameObject.Contains(key))
             {
-                if (!_dockedAssetToGameObject.Contains(assetKey))
+                _dockedAssetToGameObject.Add(key);
+                gameObjectDocker.OnDestroyTrigger(() =>
                 {
-                    _dockedAssetToGameObject.Add(key);
-                    gameObject.OnDestroyTrigger(() =>
-                    {
-                        _dockedAssetToGameObject.Remove(key);
-                        ReleaseAsset(key);
-                    });
-                }
-                else
-                {
-                    Debug.LogWarning(
-                        $"Not able to dock asset {key} to {gameObject.name} because it is already docked to another GameObject");
-                }
+                    _dockedAssetToGameObject.Remove(key);
+                    ReleaseAsset(key);
+                });
             }
-          
-            return operation;
+            else
+            {
+                Debug.LogWarning(
+                    $"Not able to dock asset {key} to {gameObjectDocker.name} because it is already docked to another GameObject");
+            }
         }
 
-        public static UniTask<OperationResult<T>> DockTo<T>(this UniTask<OperationResult<T>> operation,
-            AssetReferenceT<T> reference, GameObject gameObject) where T : Object
-        {
-            if (GuardKey(reference, out var key))
-                return DockTo(operation, key, gameObject);
-            return operation;
-        }
-
+        #endregion
+        
         public static void OnSceneUnloaded(Scene sceneUnload)
         {
             if (_sceneToAddress.TryGetValue(sceneUnload, out var addressList))
