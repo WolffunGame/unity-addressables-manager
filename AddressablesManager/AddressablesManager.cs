@@ -16,6 +16,7 @@ namespace UnityEngine.AddressableAssets
         private static readonly Dictionary<string, List<IResourceLocation>> _locations;
         private static readonly List<IResourceLocation> _noLocation;
         private static readonly Dictionary<string, Object> _assets;
+        private static readonly HashSet<string> _asyncLoadingAssets;
         private static readonly Dictionary<string, SceneInstance> _scenes;
         private static readonly Dictionary<string, List<GameObject>> _instances;
         private static readonly Queue<List<GameObject>> _instanceListPool;
@@ -35,13 +36,14 @@ namespace UnityEngine.AddressableAssets
             ExceptionHandle = ExceptionHandleType.Log;
 
             _locations = new Dictionary<string, List<IResourceLocation>>();
-            _noLocation = new List<IResourceLocation>(0);
+            _noLocation = new List<IResourceLocation>(10);
             _assets = new Dictionary<string, Object>();
             _scenes = new Dictionary<string, SceneInstance>();
             _instances = new Dictionary<string, List<GameObject>>();
             _instanceListPool = new Queue<List<GameObject>>();
             _noInstanceList = new List<GameObject>(0);
             _keys = new List<object>();
+            _asyncLoadingAssets = new (20);
         }
 
         private static void Clear()

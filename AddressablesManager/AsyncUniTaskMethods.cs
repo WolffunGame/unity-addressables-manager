@@ -90,7 +90,9 @@ namespace UnityEngine.AddressableAssets
 
                 return new OperationResult<T>(false, key, default);
             }
-
+            
+            await UniTask.WaitUntil(() => !_asyncLoadingAssets.Contains(key));
+            
             if (_assets.ContainsKey(key))
             {
                 if (_assets[key] is T asset)
@@ -101,12 +103,12 @@ namespace UnityEngine.AddressableAssets
 
                 return new OperationResult<T>(false, key, default);
             }
-
             try
             {
+                _asyncLoadingAssets.Add(key);
                 var operation = Addressables.LoadAssetAsync<T>(key);
                 await operation;
-
+                _asyncLoadingAssets.Remove(key);
                 OnLoadAssetCompleted(operation, key, false);
                 return new OperationResult<T>(key, operation);
             }
@@ -117,7 +119,10 @@ namespace UnityEngine.AddressableAssets
 
                 if (ExceptionHandle == ExceptionHandleType.Log)
                     Debug.LogException(ex);
-
+                
+                if(_asyncLoadingAssets.Contains(key))
+                    _asyncLoadingAssets.Remove(key);
+                
                 return new OperationResult<T>(false, key, default);
             }
         }
@@ -134,7 +139,9 @@ namespace UnityEngine.AddressableAssets
 
                 return new OperationResult<T>(false, reference, default);
             }
-
+            
+            await UniTask.WaitUntil(() => !_asyncLoadingAssets.Contains(key));
+            
             if (_assets.ContainsKey(key))
             {
                 if (_assets[key] is T asset)
@@ -148,9 +155,10 @@ namespace UnityEngine.AddressableAssets
 
             try
             {
+                _asyncLoadingAssets.Add(key);
                 var operation = reference.LoadAssetAsync<T>();
                 await operation;
-
+                _asyncLoadingAssets.Remove(key);
                 OnLoadAssetCompleted(operation, key, true);
                 return new OperationResult<T>(reference, operation);
             }
@@ -161,7 +169,8 @@ namespace UnityEngine.AddressableAssets
 
                 if (ExceptionHandle == ExceptionHandleType.Log)
                     Debug.LogException(ex);
-
+                if(_asyncLoadingAssets.Contains(key))
+                    _asyncLoadingAssets.Remove(key);
                 return new OperationResult<T>(false, reference, default);
             }
         }
@@ -361,12 +370,15 @@ namespace UnityEngine.AddressableAssets
 
                 return new OperationResult<GameObject>(false, key, default);
             }
+            
+            await UniTask.WaitUntil(() => !_asyncLoadingAssets.Contains(key));
 
             try
             {
+                _asyncLoadingAssets.Add(key);
                 var operation = Addressables.InstantiateAsync(key, parent, inWorldSpace, trackHandle);
                 await operation;
-
+                _asyncLoadingAssets.Remove(key);
                 OnInstantiateCompleted(operation, key, false);
                 return new OperationResult<GameObject>(key, operation);
             }
@@ -377,6 +389,9 @@ namespace UnityEngine.AddressableAssets
 
                 if (ExceptionHandle == ExceptionHandleType.Log)
                     Debug.LogException(ex);
+                
+                if(_asyncLoadingAssets.Contains(key))
+                    _asyncLoadingAssets.Remove(key);
 
                 return new OperationResult<GameObject>(false, key, default);
             }
@@ -396,12 +411,15 @@ namespace UnityEngine.AddressableAssets
 
                 return new OperationResult<GameObject>(false, reference, default);
             }
+            
+            await UniTask.WaitUntil(() => !_asyncLoadingAssets.Contains(key));
 
             try
             {
+                _asyncLoadingAssets.Add(key);
                 var operation = reference.InstantiateAsync(parent, inWorldSpace);
                 await operation;
-
+                _asyncLoadingAssets.Remove(key);
                 OnInstantiateCompleted(operation, key, true);
                 return new OperationResult<GameObject>(reference, operation);
             }
@@ -412,7 +430,10 @@ namespace UnityEngine.AddressableAssets
 
                 if (ExceptionHandle == ExceptionHandleType.Log)
                     Debug.LogException(ex);
-
+                
+                if(_asyncLoadingAssets.Contains(key))
+                    _asyncLoadingAssets.Remove(key);
+                
                 return new OperationResult<GameObject>(false, reference, default);
             }
         }
