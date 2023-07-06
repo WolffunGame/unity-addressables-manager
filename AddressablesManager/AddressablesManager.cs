@@ -34,7 +34,6 @@ namespace UnityEngine.AddressableAssets
         static AddressablesManager()
         {
             ExceptionHandle = ExceptionHandleType.Log;
-
             _locations = new Dictionary<string, List<IResourceLocation>>();
             _noLocation = new List<IResourceLocation>(10);
             _assets = new Dictionary<string, Object>();
@@ -44,6 +43,7 @@ namespace UnityEngine.AddressableAssets
             _noInstanceList = new List<GameObject>(0);
             _keys = new List<object>();
             _asyncLoadingAssets = new (20);
+            Application.quitting += OnAppQuit;
         }
 
         private static void Clear()
@@ -471,5 +471,7 @@ namespace UnityEngine.AddressableAssets
             _instances.Remove(key);
             PoolInstanceList(instanceList);
         }
+
+ 		static partial void OnAppQuit();
     }
 }

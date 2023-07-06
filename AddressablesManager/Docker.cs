@@ -150,14 +150,14 @@ namespace UnityEngine.AddressableAssets
                 return;
             _isInitialized = true;
             SceneManager.sceneUnloaded += OnSceneUnloaded;
-            Application.quitting += OnApplicationQuit;
         }
 
-        private static void OnApplicationQuit()
+        static partial void OnAppQuit()
         {
+            Clear();
+            _sceneToAddress.Clear();
+            _dockedAssetToGameObject.Clear();
             _isInitialized = false;
-            SceneManager.sceneUnloaded -= OnSceneUnloaded;
-            Application.quitting -= OnApplicationQuit;
         }
     }
 }
