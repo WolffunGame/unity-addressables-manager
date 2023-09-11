@@ -178,7 +178,7 @@ namespace UnityEngine.AddressableAssets
         public static async Task<OperationResult<SceneInstance>> LoadSceneAsync(string key,
                                                                                 LoadSceneMode loadMode = LoadSceneMode.Single,
                                                                                 bool activateOnLoad = true,
-                                                                                int priority = 100)
+                                                                                int priority = 100, LocalPhysicsMode localPhysicsMode)
         {
             if (!GuardKey(key, out key))
             {
@@ -201,7 +201,12 @@ namespace UnityEngine.AddressableAssets
 
             try
             {
-                var operation = Addressables.LoadSceneAsync(key, loadMode, activateOnLoad, priority);
+                var operation = Addressables.LoadSceneAsync(key, new LoadSceneParameters()
+                {
+                    loadSceneMode = loadMode,
+                    localPhysicsMode = localPhysicsMode
+                }, activateOnLoad, priority);
+                
                 await operation.Task;
 
                 OnLoadSceneCompleted(operation, key);
