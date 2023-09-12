@@ -215,6 +215,11 @@ namespace UnityEngine.AddressableAssets
                     localPhysicsMode = localPhysicsMode
                 }, activateOnLoad , priority);
                 await operation;
+                
+                if (loadMode == LoadSceneMode.Single)
+                {
+                    _scenes.Clear();
+                }
 
                 OnLoadSceneCompleted(operation, key);
                 return new OperationResult<SceneInstance>(key, operation);
@@ -259,6 +264,11 @@ namespace UnityEngine.AddressableAssets
             {
                 var operation = reference.LoadSceneAsync(loadMode, activateOnLoad, priority);
                 await operation;
+
+                if (loadMode == LoadSceneMode.Single)
+                {
+                    _scenes.Clear();
+                }
 
                 OnLoadSceneCompleted(operation, key);
                 return new OperationResult<SceneInstance>(reference, operation);
