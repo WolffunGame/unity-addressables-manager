@@ -46,12 +46,17 @@ namespace UnityEngine.AddressableAssets
             Application.quitting += OnAppQuit;
         }
 
-        private static void Clear()
+        public static void Clear()
         {
             _keys.Clear();
             _locations.Clear();
             _assets.Clear();
             _scenes.Clear();
+            _noInstanceList.Clear();
+            _asyncLoadingAssets.Clear();
+            _instances.Clear();
+            _noLocation.Clear();
+            _instanceListPool.Clear();
         }
 
         private static List<GameObject> GetInstanceList()
