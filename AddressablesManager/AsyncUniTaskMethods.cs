@@ -293,7 +293,7 @@ namespace UnityEngine.AddressableAssets
             }
 
             _scenes.Remove(key);
-
+			if (!scene.Scene.IsValid())  return new OperationResult<SceneInstance>(false, key, default);
             try
             {
                 var operation = Addressables.UnloadSceneAsync(scene, autoReleaseHandle);

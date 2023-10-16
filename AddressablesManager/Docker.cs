@@ -159,5 +159,7 @@ namespace UnityEngine.AddressableAssets
             _dockedAssetToGameObject.Clear();
             _isInitialized = false;
         }
+
+
     }
 }
