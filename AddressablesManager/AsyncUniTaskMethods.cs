@@ -199,12 +199,16 @@ namespace UnityEngine.AddressableAssets
                 return new OperationResult<SceneInstance>(false, key, default);
             }
 
-            if (_scenes.TryGetValue(key, out var scene))
+            if (_scenes.TryGetValue(key, out var scene)  )
             {
-                if (activateOnLoad )
-                    await ActivateSceneAsync(scene, priority);
-
-                return new OperationResult<SceneInstance>(true, key, in scene);
+                if (scene.Scene.IsValid())
+                {
+                    if (activateOnLoad)
+                        await ActivateSceneAsync(scene, priority);
+                    return new OperationResult<SceneInstance>(true, key, in scene);
+                }
+                else
+                    _scenes.Remove(key);
             }
 
             try
