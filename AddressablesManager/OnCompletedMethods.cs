@@ -141,12 +141,15 @@ namespace UnityEngine.AddressableAssets
         }
 
         private static void OnLoadSceneCompleted(AsyncOperationHandle<SceneInstance> handle,
-                                                 string key,
-                                                 Action<SceneInstance> onSucceeded = null,
-                                                 Action<string> onFailed = null)
+            string key,
+            Action<SceneInstance> onSucceeded = null,
+            Action<string> onFailed = null,
+            LoadSceneMode mode = LoadSceneMode.Single)
         {
             if (handle.Status == AsyncOperationStatus.Succeeded)
             {
+                if(mode == LoadSceneMode.Single)
+                    _scenes.Clear();
                 _scenes.Add(key, handle.Result);
                 onSucceeded?.Invoke(handle.Result);
             }

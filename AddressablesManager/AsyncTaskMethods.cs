@@ -207,7 +207,6 @@ namespace UnityEngine.AddressableAssets
             {
                 var operation = Addressables.LoadSceneAsync(key, loadMode, activateOnLoad, priority);
                 await operation.Task;
-
                 OnLoadSceneCompleted(operation, key);
                 return new OperationResult<SceneInstance>(key, operation);
             }

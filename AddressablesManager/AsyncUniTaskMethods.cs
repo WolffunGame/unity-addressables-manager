@@ -215,8 +215,7 @@ namespace UnityEngine.AddressableAssets
             {
                 var operation = Addressables.LoadSceneAsync(key, loadMode, activateOnLoad , priority);
                 await operation;
-
-                OnLoadSceneCompleted(operation, key);
+                OnLoadSceneCompleted(operation, key, mode:loadMode);
                 return new OperationResult<SceneInstance>(key, operation);
             }
             catch (Exception ex)
@@ -259,8 +258,7 @@ namespace UnityEngine.AddressableAssets
             {
                 var operation = reference.LoadSceneAsync(loadMode, activateOnLoad, priority);
                 await operation;
-
-                OnLoadSceneCompleted(operation, key);
+                OnLoadSceneCompleted(operation, key, mode:loadMode);
                 return new OperationResult<SceneInstance>(reference, operation);
             }
             catch (Exception ex)
