@@ -90,8 +90,8 @@ namespace UnityEngine.AddressableAssets
 
                 return new OperationResult<T>(false, key, default);
             }
-            
-            await UniTask.WaitUntil(() => !_asyncLoadingAssets.Contains(key));
+            if(_asyncLoadingAssets.Contains(key))
+               await UniTask.WaitUntil(() => !_asyncLoadingAssets.Contains(key));
             
             if (_assets.ContainsKey(key))
             {
@@ -139,8 +139,8 @@ namespace UnityEngine.AddressableAssets
 
                 return new OperationResult<T>(false, reference, default);
             }
-            
-            await UniTask.WaitUntil(() => !_asyncLoadingAssets.Contains(key));
+            if(_asyncLoadingAssets.Contains(key))
+                await UniTask.WaitUntil(() => !_asyncLoadingAssets.Contains(key));
             
             if (_assets.ContainsKey(key))
             {
@@ -372,8 +372,8 @@ namespace UnityEngine.AddressableAssets
 
                 return new OperationResult<GameObject>(false, key, default);
             }
-            
-            await UniTask.WaitUntil(() => !_asyncLoadingAssets.Contains(key));
+            if(_asyncLoadingAssets.Contains(key))
+                await UniTask.WaitUntil(() => !_asyncLoadingAssets.Contains(key));
 
             try
             {
@@ -413,8 +413,8 @@ namespace UnityEngine.AddressableAssets
 
                 return new OperationResult<GameObject>(false, reference, default);
             }
-            
-            await UniTask.WaitUntil(() => !_asyncLoadingAssets.Contains(key));
+            if(_asyncLoadingAssets.Contains(key))
+                await UniTask.WaitUntil(() => !_asyncLoadingAssets.Contains(key));
 
             try
             {
