@@ -45,7 +45,8 @@ namespace UnityEngine.AddressableAssets
             _asyncLoadingAssets = new (20);
             Application.quitting += OnAppQuit;
         }
-
+        
+        [RuntimeInitializeOnLoadMethod]
         public static void Clear()
         {
             _keys.Clear();
