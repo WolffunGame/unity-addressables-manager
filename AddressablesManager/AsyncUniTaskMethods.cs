@@ -156,7 +156,11 @@ namespace UnityEngine.AddressableAssets
             try
             {
                 _asyncLoadingAssets.Add(key);
-                var operation = reference.LoadAssetAsync<T>();
+                AsyncOperationHandle<TObject> operation = default;
+                if (reference.OperationHandle.IsValid() && reference.OperationHandle.IsDone())
+                    operation = reference.OperationHandle;
+                else
+                    operation = reference.LoadAssetAsync<T>();
                 await operation;
                 _asyncLoadingAssets.Remove(key);
                 OnLoadAssetCompleted(operation, key, true);
