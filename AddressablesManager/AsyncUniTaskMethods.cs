@@ -78,7 +78,7 @@ namespace UnityEngine.AddressableAssets
             }
         }
 
-        public static async UniTask<OperationResult<T>> LoadAssetAsync<T>(string key) where T : Object
+       	public static async UniTask<OperationResult<T>> LoadAssetAsync<T>(string key) where T : Object
         {
             if (!GuardKey(key, out key))
             {
@@ -127,6 +127,7 @@ namespace UnityEngine.AddressableAssets
             }
         }
 
+
         public static async UniTask<OperationResult<T>> LoadAssetAsync<T>(AssetReferenceT<T> reference) where T : Object
         {
             if (!GuardKey(reference, out var key))
@@ -156,7 +157,11 @@ namespace UnityEngine.AddressableAssets
             try
             {
                 _asyncLoadingAssets.Add(key);
-                var operation = reference.LoadAssetAsync<T>();
+                UnityEngine.ResourceManagement.AsyncOperations.AsyncOperationHandle<TObject> operation = default;
+                if(reference.OperationHandle.IsValid() && reference.OperationHandle.IsDone)
+                    operation = reference.OperationHandle.Convert<T>();
+                else
+                    operation = reference.LoadAssetAsync<T>();
                 await operation;
                 _asyncLoadingAssets.Remove(key);
                 OnLoadAssetCompleted(operation, key, true);
@@ -174,6 +179,7 @@ namespace UnityEngine.AddressableAssets
                 return new OperationResult<T>(false, reference, default);
             }
         }
+
 
         public static async UniTask ActivateSceneAsync(SceneInstance scene, int priority)
         {

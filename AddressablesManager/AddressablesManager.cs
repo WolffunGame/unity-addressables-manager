@@ -49,8 +49,6 @@ namespace UnityEngine.AddressableAssets
         [RuntimeInitializeOnLoadMethod]
         public static void Clear()
         {   
-			foreach (var obj in _assets.Values)
-                Addressables.Release(obj);
             _keys.Clear();
             _locations.Clear();
             _assets.Clear();
