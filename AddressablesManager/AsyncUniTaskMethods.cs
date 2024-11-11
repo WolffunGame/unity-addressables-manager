@@ -157,7 +157,7 @@ namespace UnityEngine.AddressableAssets
             try
             {
                 _asyncLoadingAssets.Add(key);
-                UnityEngine.ResourceManagement.AsyncOperations.AsyncOperationHandle<TObject> operation = default;
+                UnityEngine.ResourceManagement.AsyncOperations.AsyncOperationHandle<T> operation = default;
                 if(reference.OperationHandle.IsValid() && reference.OperationHandle.IsDone)
                     operation = reference.OperationHandle.Convert<T>();
                 else
